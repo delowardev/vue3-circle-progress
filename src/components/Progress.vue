@@ -53,7 +53,8 @@ import {
   computed,
   ref,
   onMounted,
-  onBeforeUnmount
+  onBeforeUnmount,
+  watch
 } from "vue";
 import { GRADIENT, SHADOW, BG_SHADOW } from "@/default";
 
@@ -293,27 +294,22 @@ export default defineComponent({
       );
     }
 
+    function updatePercent() {
+      const circumference = 2 * Math.PI * circleRadiusFg();
+      offset.value = circumference - (circumference * props.percent) / 100;
+    }
+
     function placeOffset() {
-      let circleRadiusFg = (props.size - props.borderWidth) * 0.5;
-
-      if (props.borderBgWidth > props.borderWidth) {
-        circleRadiusFg -= (props.borderBgWidth - props.borderWidth) * 0.5;
-      }
-
-      const circumference = 2 * Math.PI * circleRadiusFg;
-      const dashOffset = circumference - (circumference * props.percent) / 100;
-
       if (!props.viewport) {
-        offset.value = dashOffset;
+        updatePercent();
       } else {
         window.addEventListener("scroll", placeOffset);
         if (elem.value && inViewport(elem.value)) {
           window.removeEventListener("scroll", placeOffset);
           if (props.viewport) {
-            offset.value = dashOffset;
+            updatePercent();
           }
           if (props.onViewport && typeof props.onViewport === "function") {
-            offset.value = dashOffset;
             props.onViewport();
           }
         }
@@ -331,6 +327,13 @@ export default defineComponent({
     onBeforeUnmount(() => {
       window.removeEventListener("scroll", placeOffset);
     });
+
+    watch(
+      () => props.percent,
+      () => {
+        updatePercent();
+      }
+    );
 
     return {
       elem,

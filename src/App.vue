@@ -1,6 +1,11 @@
 <template>
-  <Progress :viewport="true" :is-shadow="true" :is-bg-shadow="true" />
-  <Progress :viewport="true" :is-gradient="true" :size="size" />
+  <Progress
+    :viewport="true"
+    :is-shadow="true"
+    :is-bg-shadow="true"
+    :percent="percent"
+  />
+  <Progress :viewport="true" :is-gradient="true" :percent="percent" />
 </template>
 
 <script lang="ts">
@@ -13,14 +18,17 @@ export default defineComponent({
     Progress
   },
   setup() {
-    const size = ref(180);
+    const percent = ref(10);
 
-    // setInterval(() => {
-    //   size.value += 5;
-    // }, 100);
+    setInterval(() => {
+      if (percent.value > 99) {
+        percent.value = 0;
+      }
+      percent.value += 1;
+    }, 100);
 
     return {
-      size
+      percent
     };
   }
 });
