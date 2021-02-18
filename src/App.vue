@@ -1,16 +1,15 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+  <Progress />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import HelloWorld from "./components/HelloWorld.vue";
+import Progress from "./components/Progress.vue";
 
 export default defineComponent({
   name: "App",
   components: {
-    HelloWorld
+    Progress
   }
 });
 </script>
