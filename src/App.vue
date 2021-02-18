@@ -1,5 +1,24 @@
 <template>
-  <Progress />
+  <Progress :viewport="true" :is-shadow="true" :is-bg-shadow="true" />
+  <Progress :viewport="true" :is-gradient="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
+  <Progress :viewport="true" />
 </template>
 
 <script lang="ts">

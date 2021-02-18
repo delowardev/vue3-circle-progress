@@ -1,5 +1,5 @@
 <template>
-  <div v-bind="wrapAttr" class="vue3-circular-progressbar">
+  <div ref="elem" v-bind="wrapAttr" class="vue3-circular-progressbar">
     <svg v-bind="svgAttr">
       <linearGradient v-if="isGradient" v-bind="gradientAttr">
         <stop v-bind="gradientStartAttr" />
@@ -48,7 +48,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, onMounted } from "vue";
+import {
+  defineComponent,
+  computed,
+  ref,
+  onMounted,
+  onBeforeUnmount
+} from "vue";
 import { GRADIENT, SHADOW, BG_SHADOW } from "@/default";
 
 function uuid(prefix = "", suffix = "") {
@@ -136,14 +142,14 @@ export default defineComponent({
       default: false
     },
     onViewport: {
-      type: Function,
-      default: () => ({})
+      type: Function
     }
   },
   setup(props) {
     const uid1 = uuid("grd_");
     const uid2 = uuid("shd1_");
     const uid3 = uuid("shd2_");
+    const elem = ref(null);
 
     const gradient = computed(() => ({ ...GRADIENT, ...props.gradient }));
     const shadow = computed(() => ({ ...SHADOW, ...props.shadow }));
@@ -166,13 +172,6 @@ export default defineComponent({
 
     const circumference = computed(() => 2 * Math.PI * circleRadiusFg.value);
     const offset = ref(2 * Math.PI * circleRadiusFg.value);
-    const dashoffset = computed(
-      () => circumference.value - (circumference.value * props.percent) / 100
-    );
-
-    onMounted(() => {
-      offset.value = dashoffset.value;
-    });
 
     const wrapStyle = computed(() => ({
       height: props.size + "px",
@@ -231,12 +230,12 @@ export default defineComponent({
 
     const gradientStartAttr = computed(() => ({
       offset: 0,
-      stopColor: gradient.value.startColor
+      "stop-color": gradient.value.startColor
     }));
 
     const gradientStopAttr = computed(() => ({
       offset: 100,
-      stopColor: gradient.value.stopColor
+      "stop-color": gradient.value.stopColor
     }));
 
     // shadow
@@ -272,7 +271,64 @@ export default defineComponent({
       floodOpacity: bgShadow.value.opacity
     }));
 
+    /**
+     * Functions
+     */
+
+    function inViewport(el: HTMLDivElement | null) {
+      if (el === null) return;
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <=
+          (window.innerWidth || document.documentElement.clientWidth)
+      );
+    }
+
+    function placeOffset() {
+      let circleRadiusFg = (props.size - props.borderWidth) * 0.5;
+
+      if (props.borderBgWidth > props.borderWidth) {
+        circleRadiusFg -= (props.borderBgWidth - props.borderWidth) * 0.5;
+      }
+
+      const circumference = 2 * Math.PI * circleRadiusFg;
+      const dashOffset = circumference - (circumference * props.percent) / 100;
+
+      if (!props.viewport) {
+        offset.value = dashOffset;
+      } else {
+        window.addEventListener("scroll", placeOffset);
+        if (elem.value && inViewport(elem.value)) {
+          window.removeEventListener("scroll", placeOffset);
+          if (props.viewport) {
+            offset.value = dashOffset;
+          }
+          if (props.onViewport && typeof props.onViewport === "function") {
+            offset.value = dashOffset;
+            props.onViewport();
+          }
+        }
+      }
+    }
+
+    /**
+     * Lifecycle
+     */
+
+    onMounted(() => {
+      placeOffset();
+    });
+
+    onBeforeUnmount(() => {
+      window.removeEventListener("scroll", placeOffset);
+    });
+
     return {
+      elem,
       wrapAttr,
       svgAttr,
       gradientAttr,
