@@ -1,34 +1,27 @@
 <template>
   <Progress :viewport="true" :is-shadow="true" :is-bg-shadow="true" />
-  <Progress :viewport="true" :is-gradient="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
-  <Progress :viewport="true" />
+  <Progress :viewport="true" :is-gradient="true" :size="size" />
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import Progress from "./components/Progress.vue";
 
 export default defineComponent({
   name: "App",
   components: {
     Progress
+  },
+  setup() {
+    const size = ref(180);
+
+    // setInterval(() => {
+    //   size.value += 5;
+    // }, 100);
+
+    return {
+      size
+    };
   }
 });
 </script>

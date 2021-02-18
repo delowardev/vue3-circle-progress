@@ -143,6 +143,10 @@ export default defineComponent({
     },
     onViewport: {
       type: Function
+    },
+    class: {
+      type: String,
+      default: ""
     }
   },
   setup(props) {
@@ -151,65 +155,66 @@ export default defineComponent({
     const uid3 = uuid("shd2_");
     const elem = ref(null);
 
-    const gradient = computed(() => ({ ...GRADIENT, ...props.gradient }));
-    const shadow = computed(() => ({ ...SHADOW, ...props.shadow }));
-    const bgShadow = computed(() => ({ ...BG_SHADOW, ...props.bgShadow }));
+    const gradient = { ...GRADIENT, ...props.gradient };
+    const shadow = { ...SHADOW, ...props.shadow };
+    const bgShadow = { ...BG_SHADOW, ...props.bgShadow };
 
-    const circleRadiusBg = computed(() => {
+    const circleRadiusBg = () => {
       let value = (props.size - props.borderBgWidth) * 0.5;
       if (props.borderWidth > props.borderBgWidth) {
         value -= (props.borderWidth - props.borderBgWidth) * 0.5;
       }
       return value;
-    });
-    const circleRadiusFg = computed(() => {
+    };
+
+    const circleRadiusFg = () => {
       let value = (props.size - props.borderWidth) * 0.5;
       if (props.borderBgWidth > props.borderWidth) {
         value -= (props.borderBgWidth - props.borderWidth) * 0.5;
       }
       return value;
-    });
+    };
 
-    const circumference = computed(() => 2 * Math.PI * circleRadiusFg.value);
-    const offset = ref(2 * Math.PI * circleRadiusFg.value);
+    const circumference = 2 * Math.PI * circleRadiusFg();
+    const offset = ref(2 * Math.PI * circleRadiusFg());
 
-    const wrapStyle = computed(() => ({
+    const wrapStyle = {
       height: props.size + "px",
       width: props.size + "px",
       position: "relative"
-    }));
+    };
 
-    const wrapAttr = computed(() => ({
-      class: "circle-progress-wrap",
-      style: wrapStyle.value
-    }));
+    const wrapAttr = {
+      class: props.class,
+      style: wrapStyle
+    };
 
-    const svgAttr = computed(() => ({
+    const svgAttr = {
       style: {
         transform: "rotate(-90deg)",
         overflow: "visible"
       },
       xmlns: "http://www.w3.org/2000/svg",
       viewBox: `${props.size / 2} ${props.size / 2} ${props.size} ${props.size}`
-    }));
+    };
 
-    const circleBgAttr = computed(() => ({
+    const circleBgAttr = {
       cx: props.size,
       cy: props.size,
-      r: circleRadiusBg.value,
+      r: circleRadiusBg(),
       stroke: props.emptyColor,
       "stroke-width": props.borderBgWidth,
       fill: props.background,
       ...(props.isBgShadow && { filter: `url(#${uid3})` })
-    }));
+    };
 
     const circleFgAttr = computed(() => ({
       cx: props.size,
       cy: props.size,
-      r: circleRadiusFg.value,
+      r: circleRadiusFg(),
       fill: "none",
       "stroke-width": props.borderWidth,
-      "stroke-dasharray": circumference.value,
+      "stroke-dasharray": circumference,
       "stroke-dashoffset": offset.value,
       "stroke-linecap": props.linecap,
       stroke: props.isGradient ? `url(#${uid1})` : props.fillColor,
@@ -219,24 +224,24 @@ export default defineComponent({
       })
     }));
 
-    const gradientAttr = computed(() => ({
+    const gradientAttr = {
       id: uid1,
       x1: "0%",
       y1: "0%",
       x2: "0%",
       y2: "100%",
-      gradientTransform: `rotate(${gradient.value.angle}, .5, .5)`
-    }));
+      gradientTransform: `rotate(${gradient.angle}, .5, .5)`
+    };
 
-    const gradientStartAttr = computed(() => ({
+    const gradientStartAttr = {
       offset: 0,
-      "stop-color": gradient.value.startColor
-    }));
+      "stop-color": gradient.startColor
+    };
 
-    const gradientStopAttr = computed(() => ({
+    const gradientStopAttr = {
       offset: 100,
-      "stop-color": gradient.value.stopColor
-    }));
+      "stop-color": gradient.stopColor
+    };
 
     // shadow
     const shadowAttr = {
@@ -247,29 +252,29 @@ export default defineComponent({
       y: "-250%"
     };
 
-    const feShadowAttr = computed(() => ({
-      dx: shadow.value.vertical * -1,
-      dy: shadow.value.horizontal,
-      stdDeviation: shadow.value.blur,
-      floodColor: shadow.value.color,
-      floodOpacity: shadow.value.opacity
-    }));
+    const feShadowAttr = {
+      dx: shadow.vertical * -1,
+      dy: shadow.horizontal,
+      stdDeviation: shadow.blur,
+      floodColor: shadow.color,
+      floodOpacity: shadow.opacity
+    };
 
-    const bgShadowAttr = computed(() => ({
+    const bgShadowAttr = {
       id: uid3,
       width: "500%",
       height: "500%",
       x: "-250%",
       y: "-250%"
-    }));
+    };
 
-    const feBgShadowAttr = computed(() => ({
-      dx: bgShadow.value.vertical * -1,
-      dy: bgShadow.value.horizontal,
-      stdDeviation: bgShadow.value.blur,
-      floodColor: bgShadow.value.color,
-      floodOpacity: bgShadow.value.opacity
-    }));
+    const feBgShadowAttr = {
+      dx: bgShadow.vertical * -1,
+      dy: bgShadow.horizontal,
+      stdDeviation: bgShadow.blur,
+      floodColor: bgShadow.color,
+      floodOpacity: bgShadow.opacity
+    };
 
     /**
      * Functions
