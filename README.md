@@ -1,8 +1,8 @@
-# React Circle Progressbar
+# Vue 3 Circle Progress
 
-![React Circle Progressbar](https://i.imgur.com/AAWDdsQl.jpg)
+![Vue 3 Circle Progress](https://i.imgur.com/AAWDdsQl.jpg)
 
-Highly customizable & lightweight circular progressbar component, built with SVG and extensively customizable.
+Highly customizable & lightweight circular progressbar component for Vue 3, built with SVG and extensively customizable.
 
 > Package Size: 8.93kb
 
@@ -20,13 +20,13 @@ Highly customizable & lightweight circular progressbar component, built with SVG
 
 Install with npm:
 ```
-npm install --save vue-circle-progress
+npm install --save vue3-circle-progress
 ```
 
 or yarn:
 
 ```
-yarn add vue-circle-progress
+yarn add vue3-circle-progress
 ```
 
 ## Usage and Examples
@@ -73,7 +73,7 @@ yarn add vue-circle-progress
 
 <script>
 
-import CircleProgress from "vue-circle-progress";
+import CircleProgress from "vue3-circle-progress";
 export default {
   components: {CircleProgress}
 }
@@ -129,7 +129,7 @@ Available Props, this package supports 30+ props
 
 <script>
 
-import CircleProgress from "vue-circle-progress";
+import CircleProgress from "vue3-circle-progress";
 export default {
   components: {CircleProgress}
 }
