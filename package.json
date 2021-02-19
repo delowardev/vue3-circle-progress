@@ -1,7 +1,13 @@
 {
-  "name": "vue3-circular-progressbar",
-  "version": "0.1.0",
+  "name": "vue-circle-progress",
+  "version": "1.0.0",
   "private": true,
+  "description": "A circular progressbar component for Vue 3, built with SVG and extensively customizable",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/delowardev/vue-circle-progress.git"
+  },
+  "author": "delowar",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --target lib --name circle-progress ./src/entry.ts",
