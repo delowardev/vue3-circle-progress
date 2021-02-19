@@ -72,7 +72,7 @@ function uuid(prefix = "", suffix = "") {
 }
 
 export default defineComponent({
-  name: "progress",
+  name: "circle-progress",
   props: {
     size: {
       type: Number,

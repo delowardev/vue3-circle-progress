@@ -1,36 +1,18 @@
 <template>
-  <Progress
+  <circle-progress
     :viewport="true"
     :is-shadow="true"
     :is-bg-shadow="true"
     :percent="percent"
   />
-  <Progress :viewport="true" :is-gradient="true" :percent="percent" />
+  <circle-progress :viewport="true" :is-gradient="true" />
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import Progress from "./components/Progress.vue";
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "App",
-  components: {
-    Progress
-  },
-  setup() {
-    const percent = ref(10);
-
-    setInterval(() => {
-      if (percent.value > 99) {
-        percent.value = 0;
-      }
-      percent.value += 1;
-    }, 100);
-
-    return {
-      percent
-    };
-  }
+  name: "App"
 });
 </script>
 
