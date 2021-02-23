@@ -1,6 +1,6 @@
 {
   "name": "vue3-circle-progress",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "private": false,
   "main": "./dist/circle-progress.umd.min.js",
   "description": "A circular progressbar component for Vue 3, built with SVG and extensively customizable",
@@ -11,19 +11,27 @@
   "author": "delowar",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target lib --name circle-progress ./src/entry.ts",
+    "build": "vue-cli-service build --target lib --name circle-progress ./src/entry.js",
     "lint": "vue-cli-service lint"
   },
+  "keywords": [
+    "vue",
+    "vue 3",
+    "vuejs",
+    "circle",
+    "progress",
+    "bar",
+    "progress bar",
+    "circle progress",
+    "vue progress"
+  ],
   "dependencies": {
-    "core-js": "^3.6.5",
-    "vue": "^3.0.0"
+    "core-js": "^3.9.0",
+    "vue": "^3.0.5"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.33.0",
-    "@typescript-eslint/parser": "^2.33.0",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
-    "@vue/cli-plugin-typescript": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
     "@vue/compiler-sfc": "^3.0.0",
     "@vue/eslint-config-prettier": "^6.0.0",
@@ -34,7 +42,6 @@
     "eslint-plugin-vue": "^7.0.0-0",
     "node-sass": "^4.12.0",
     "prettier": "^1.19.1",
-    "sass-loader": "^8.0.2",
-    "typescript": "~3.9.3"
+    "sass-loader": "^8.0.2"
   }
 }

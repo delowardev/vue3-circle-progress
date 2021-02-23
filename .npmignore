@@ -1,3 +1,6 @@
 /.idea
 /node_modules
 /.github
+/src
+/public
+.eslintrc.js

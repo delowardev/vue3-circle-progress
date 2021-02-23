@@ -4,8 +4,6 @@
 
 Highly customizable & lightweight circular progressbar component for Vue 3, built with SVG and extensively customizable.
 
-> Package Size: 8.93kb
-
 ### Table of contents
 
 * [Installation](#installation)

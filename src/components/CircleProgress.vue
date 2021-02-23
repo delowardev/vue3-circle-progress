@@ -47,15 +47,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import {
-  defineComponent,
-  computed,
-  ref,
-  onMounted,
-  onBeforeUnmount,
-  watch
-} from "vue";
+<script>
+import { computed, ref, onMounted, onBeforeUnmount, watch } from "vue";
 import { GRADIENT, SHADOW, BG_SHADOW } from "@/default";
 
 function uuid(prefix = "", suffix = "") {
@@ -71,7 +64,7 @@ function uuid(prefix = "", suffix = "") {
   );
 }
 
-export default defineComponent({
+export default {
   name: "circle-progress",
   props: {
     size: {
@@ -281,7 +274,7 @@ export default defineComponent({
      * Functions
      */
 
-    function inViewport(el: HTMLDivElement | null) {
+    function inViewport(el) {
       if (el === null) return;
       const rect = el.getBoundingClientRect();
       return (
@@ -350,5 +343,5 @@ export default defineComponent({
       feBgShadowAttr
     };
   }
-});
+};
 </script>

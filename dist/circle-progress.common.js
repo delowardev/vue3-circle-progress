@@ -235,14 +235,12 @@ for (var COLLECTION_NAME in DOMIterables) {
 
 var $forEach = __webpack_require__("b727").forEach;
 var arrayMethodIsStrict = __webpack_require__("a640");
-var arrayMethodUsesToLength = __webpack_require__("ae40");
 
 var STRICT_METHOD = arrayMethodIsStrict('forEach');
-var USES_TO_LENGTH = arrayMethodUsesToLength('forEach');
 
 // `Array.prototype.forEach` method implementation
 // https://tc39.es/ecma262/#sec-array.prototype.foreach
-module.exports = (!STRICT_METHOD || !USES_TO_LENGTH) ? function forEach(callbackfn /* , thisArg */) {
+module.exports = !STRICT_METHOD ? function forEach(callbackfn /* , thisArg */) {
   return $forEach(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
 } : [].forEach;
 
@@ -552,7 +550,7 @@ var split = ''.split;
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
 module.exports = fails(function () {
   // throws an error in rhino, see https://github.com/mozilla/rhino/issues/346
-  // eslint-disable-next-line no-prototype-builtins
+  // eslint-disable-next-line no-prototype-builtins -- safe
   return !Object('z').propertyIsEnumerable(0);
 }) ? function (it) {
   return classof(it) == 'String' ? split.call(it, '') : Object(it);
@@ -568,7 +566,7 @@ var fails = __webpack_require__("d039");
 
 module.exports = !!Object.getOwnPropertySymbols && !fails(function () {
   // Chrome 38 Symbol has incorrect toString conversion
-  // eslint-disable-next-line no-undef
+  /* global Symbol -- required for testing */
   return !String(Symbol());
 });
 
@@ -590,10 +588,10 @@ var createMethod = function (IS_INCLUDES) {
     var index = toAbsoluteIndex(fromIndex, length);
     var value;
     // Array#includes uses SameValueZero equality algorithm
-    // eslint-disable-next-line no-self-compare
+    // eslint-disable-next-line no-self-compare -- NaN check
     if (IS_INCLUDES && el != el) while (length > index) {
       value = O[index++];
-      // eslint-disable-next-line no-self-compare
+      // eslint-disable-next-line no-self-compare -- NaN check
       if (value != value) return true;
     // Array#indexOf ignores holes, Array#includes - not
     } else for (;length > index; index++) {
@@ -622,16 +620,13 @@ module.exports = {
 var $ = __webpack_require__("23e7");
 var $filter = __webpack_require__("b727").filter;
 var arrayMethodHasSpeciesSupport = __webpack_require__("1dde");
-var arrayMethodUsesToLength = __webpack_require__("ae40");
 
 var HAS_SPECIES_SUPPORT = arrayMethodHasSpeciesSupport('filter');
-// Edge 14- issue
-var USES_TO_LENGTH = arrayMethodUsesToLength('filter');
 
 // `Array.prototype.filter` method
 // https://tc39.es/ecma262/#sec-array.prototype.filter
 // with adding support of @@species
-$({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT || !USES_TO_LENGTH }, {
+$({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT }, {
   filter: function filter(callbackfn /* , thisArg */) {
     return $filter(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
   }
@@ -677,7 +672,7 @@ var store = __webpack_require__("c6cd");
 (module.exports = function (key, value) {
   return store[key] || (store[key] = value !== undefined ? value : {});
 })('versions', []).push({
-  version: '3.8.3',
+  version: '3.9.0',
   mode: IS_PURE ? 'pure' : 'global',
   copyright: '© 2021 Denis Pushkarev (zloirock.ru)'
 });
@@ -707,8 +702,8 @@ module.exports = getBuiltIn('Reflect', 'ownKeys') || function ownKeys(it) {
 /***/ (function(module, exports) {
 
 // a string of all valid unicode whitespaces
-// eslint-disable-next-line max-len
-module.exports = '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF';
+module.exports = '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u2000\u2001\u2002' +
+  '\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF';
 
 
 /***/ }),
@@ -1046,7 +1041,7 @@ var NullProtoObjectViaIFrame = function () {
 var activeXDocument;
 var NullProtoObject = function () {
   try {
-    /* global ActiveXObject */
+    /* global ActiveXObject -- old IE */
     activeXDocument = document.domain && new ActiveXObject('htmlfile');
   } catch (error) { /* ignore */ }
   NullProtoObject = activeXDocument ? NullProtoObjectViaActiveX(activeXDocument) : NullProtoObjectViaIFrame();
@@ -1355,7 +1350,8 @@ var FORCED = !IS_CONCAT_SPREADABLE_SUPPORT || !SPECIES_SUPPORT;
 // https://tc39.es/ecma262/#sec-array.prototype.concat
 // with adding support of @@isConcatSpreadable and @@species
 $({ target: 'Array', proto: true, forced: FORCED }, {
-  concat: function concat(arg) { // eslint-disable-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars -- required for `.length`
+  concat: function concat(arg) {
     var O = toObject(this);
     var A = arraySpeciesCreate(O, 0);
     var n = 0;
@@ -1693,7 +1689,7 @@ if ($stringify) {
   });
 
   $({ target: 'JSON', stat: true, forced: FORCED_JSON_STRINGIFY }, {
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars -- required for `.length`
     stringify: function stringify(it, replacer, space) {
       var args = [it];
       var index = 1;
@@ -1735,7 +1731,7 @@ var fails = __webpack_require__("d039");
 module.exports = function (METHOD_NAME, argument) {
   var method = [][METHOD_NAME];
   return !!method && fails(function () {
-    // eslint-disable-next-line no-useless-call,no-throw-literal
+    // eslint-disable-next-line no-useless-call,no-throw-literal -- required for testing
     method.call(null, argument || function () { throw 1; }, 1);
   });
 };
@@ -1865,40 +1861,6 @@ module.exports = function () {
   if (that.unicode) result += 'u';
   if (that.sticky) result += 'y';
   return result;
-};
-
-
-/***/ }),
-
-/***/ "ae40":
-/***/ (function(module, exports, __webpack_require__) {
-
-var DESCRIPTORS = __webpack_require__("83ab");
-var fails = __webpack_require__("d039");
-var has = __webpack_require__("5135");
-
-var defineProperty = Object.defineProperty;
-var cache = {};
-
-var thrower = function (it) { throw it; };
-
-module.exports = function (METHOD_NAME, options) {
-  if (has(cache, METHOD_NAME)) return cache[METHOD_NAME];
-  if (!options) options = {};
-  var method = [][METHOD_NAME];
-  var ACCESSORS = has(options, 'ACCESSORS') ? options.ACCESSORS : false;
-  var argument0 = has(options, 0) ? options[0] : thrower;
-  var argument1 = has(options, 1) ? options[1] : undefined;
-
-  return cache[METHOD_NAME] = !!method && !fails(function () {
-    if (ACCESSORS && !DESCRIPTORS) return true;
-    var O = { length: -1 };
-
-    if (ACCESSORS) defineProperty(O, 1, { enumerable: true, get: thrower });
-    else O[1] = 1;
-
-    method.call(O, argument0, argument1);
-  });
 };
 
 
@@ -2249,13 +2211,13 @@ exports.f = NASHORN_BUG ? function propertyIsEnumerable(V) {
 /***/ "d2bb":
 /***/ (function(module, exports, __webpack_require__) {
 
+/* eslint-disable no-proto -- safe */
 var anObject = __webpack_require__("825a");
 var aPossiblePrototype = __webpack_require__("3bbe");
 
 // `Object.setPrototypeOf` method
 // https://tc39.es/ecma262/#sec-object.setprototypeof
 // Works with __proto__ only. Old v8 can't work with null proto objects.
-/* eslint-disable no-proto */
 module.exports = Object.setPrototypeOf || ('__proto__' in {} ? function () {
   var CORRECT_SETTER = false;
   var test = {};
@@ -2320,12 +2282,12 @@ module.exports = function (it, TAG, STATIC) {
 
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
 module.exports =
-  // eslint-disable-next-line no-undef
+  /* global globalThis -- safe */
   check(typeof globalThis == 'object' && globalThis) ||
   check(typeof window == 'object' && window) ||
   check(typeof self == 'object' && self) ||
   check(typeof global == 'object' && global) ||
-  // eslint-disable-next-line no-new-func
+  // eslint-disable-next-line no-new-func -- fallback
   (function () { return this; })() || Function('return this')();
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__("c8ba")))
@@ -2528,7 +2490,7 @@ if (typeof window !== 'undefined') {
 // EXTERNAL MODULE: external {"commonjs":"vue","commonjs2":"vue","root":"Vue"}
 var external_commonjs_vue_commonjs2_vue_root_Vue_ = __webpack_require__("8bbf");
 
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/vue-loader-v16/dist/templateLoader.js??ref--6!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader-v16/dist??ref--0-1!./src/components/CircleProgress.vue?vue&type=template&id=4cca0a24
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/vue-loader-v16/dist/templateLoader.js??ref--6!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader-v16/dist??ref--0-1!./src/components/CircleProgress.vue?vue&type=template&id=6218faa4
 
 
 var _hoisted_1 = /*#__PURE__*/Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("feComposite", {
@@ -2572,43 +2534,43 @@ var _hoisted_6 = /*#__PURE__*/Object(external_commonjs_vue_commonjs2_vue_root_Vu
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   return Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])("div", Object(external_commonjs_vue_commonjs2_vue_root_Vue_["mergeProps"])({
     ref: "elem"
-  }, _ctx.wrapAttr, {
+  }, $setup.wrapAttr, {
     class: "vue3-circular-progressbar"
-  }), [(Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])("svg", _ctx.svgAttr, [_ctx.isGradient ? (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])("linearGradient", Object(external_commonjs_vue_commonjs2_vue_root_Vue_["mergeProps"])({
+  }), [(Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])("svg", $setup.svgAttr, [$props.isGradient ? (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])("linearGradient", Object(external_commonjs_vue_commonjs2_vue_root_Vue_["mergeProps"])({
     key: 0
-  }, _ctx.gradientAttr), [Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("stop", _ctx.gradientStartAttr, null, 16), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("stop", _ctx.gradientStopAttr, null, 16)], 16)) : Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createCommentVNode"])("", true), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("circle", _ctx.circleBgAttr, null, 16), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("circle", _ctx.circleFgAttr, null, 16), _ctx.isShadow ? (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])(external_commonjs_vue_commonjs2_vue_root_Vue_["Fragment"], {
+  }, $setup.gradientAttr), [Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("stop", $setup.gradientStartAttr, null, 16), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("stop", $setup.gradientStopAttr, null, 16)], 16)) : Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createCommentVNode"])("", true), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("circle", $setup.circleBgAttr, null, 16), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("circle", $setup.circleFgAttr, null, 16), $props.isShadow ? (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])(external_commonjs_vue_commonjs2_vue_root_Vue_["Fragment"], {
     key: 1
-  }, [_ctx.shadow.inset === false ? (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])("filter", Object(external_commonjs_vue_commonjs2_vue_root_Vue_["mergeProps"])({
+  }, [$props.shadow.inset === false ? (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])("filter", Object(external_commonjs_vue_commonjs2_vue_root_Vue_["mergeProps"])({
     key: 0
-  }, _ctx.shadowAttr), [Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("feDropShadow", _ctx.feShadowAttr, null, 16)], 16)) : (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])("filter", Object(external_commonjs_vue_commonjs2_vue_root_Vue_["mergeProps"])({
+  }, $setup.shadowAttr), [Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("feDropShadow", $setup.feShadowAttr, null, 16)], 16)) : (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])("filter", Object(external_commonjs_vue_commonjs2_vue_root_Vue_["mergeProps"])({
     key: 1
-  }, _ctx.shadowAttr), [Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("feOffset", {
-    dx: _ctx.feShadowAttr.dx,
-    dy: _ctx.feShadowAttr.dy
+  }, $setup.shadowAttr), [Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("feOffset", {
+    dx: $setup.feShadowAttr.dx,
+    dy: $setup.feShadowAttr.dy
   }, null, 8, ["dx", "dy"]), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("feGaussianBlur", {
-    stdDeviation: _ctx.feShadowAttr.stdDeviation
+    stdDeviation: $setup.feShadowAttr.stdDeviation
   }, null, 8, ["stdDeviation"]), _hoisted_1, Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("feFlood", {
-    "flood-color": _ctx.feShadowAttr.floodColor,
-    "flood-opacity": _ctx.feShadowAttr.floodOpacity,
+    "flood-color": $setup.feShadowAttr.floodColor,
+    "flood-opacity": $setup.feShadowAttr.floodOpacity,
     result: "color"
-  }, null, 8, ["flood-color", "flood-opacity"]), _hoisted_2, _hoisted_3], 16))], 64)) : Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createCommentVNode"])("", true), _ctx.bgShadow ? (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])(external_commonjs_vue_commonjs2_vue_root_Vue_["Fragment"], {
+  }, null, 8, ["flood-color", "flood-opacity"]), _hoisted_2, _hoisted_3], 16))], 64)) : Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createCommentVNode"])("", true), $props.bgShadow ? (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])(external_commonjs_vue_commonjs2_vue_root_Vue_["Fragment"], {
     key: 2
-  }, [_ctx.bgShadow.inset === false ? (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])("filter", Object(external_commonjs_vue_commonjs2_vue_root_Vue_["mergeProps"])({
+  }, [$props.bgShadow.inset === false ? (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])("filter", Object(external_commonjs_vue_commonjs2_vue_root_Vue_["mergeProps"])({
     key: 0
-  }, _ctx.bgShadowAttr), [Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("feDropShadow", _ctx.feBgShadowAttr, null, 16)], 16)) : (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])("filter", Object(external_commonjs_vue_commonjs2_vue_root_Vue_["mergeProps"])({
+  }, $setup.bgShadowAttr), [Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("feDropShadow", $setup.feBgShadowAttr, null, 16)], 16)) : (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])("filter", Object(external_commonjs_vue_commonjs2_vue_root_Vue_["mergeProps"])({
     key: 1
-  }, _ctx.bgShadowAttr), [Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("feOffset", {
-    dx: _ctx.feBgShadowAttr.dx,
-    dy: _ctx.feBgShadowAttr.dy
+  }, $setup.bgShadowAttr), [Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("feOffset", {
+    dx: $setup.feBgShadowAttr.dx,
+    dy: $setup.feBgShadowAttr.dy
   }, null, 8, ["dx", "dy"]), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("feGaussianBlur", {
-    stdDeviation: _ctx.feBgShadowAttr.stdDeviation
+    stdDeviation: $setup.feBgShadowAttr.stdDeviation
   }, null, 8, ["stdDeviation"]), _hoisted_4, Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])("feFlood", {
-    floodColor: _ctx.feBgShadowAttr.floodColor,
-    floodOpacity: _ctx.feBgShadowAttr.floodOpacity,
+    floodColor: $setup.feBgShadowAttr.floodColor,
+    floodOpacity: $setup.feBgShadowAttr.floodOpacity,
     result: "color"
   }, null, 8, ["floodColor", "floodOpacity"]), _hoisted_5, _hoisted_6], 16))], 64)) : Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createCommentVNode"])("", true)], 16))], 16);
 }
-// CONCATENATED MODULE: ./src/components/CircleProgress.vue?vue&type=template&id=4cca0a24
+// CONCATENATED MODULE: ./src/components/CircleProgress.vue?vue&type=template&id=6218faa4
 
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.array.concat.js
 var es_array_concat = __webpack_require__("99af");
@@ -2701,7 +2663,7 @@ function _objectSpread2(target) {
 
   return target;
 }
-// CONCATENATED MODULE: ./src/default.ts
+// CONCATENATED MODULE: ./src/default.js
 var GRADIENT = {
   angle: 0,
   startColor: "#ff0000",
@@ -2723,7 +2685,7 @@ var BG_SHADOW = {
   opacity: 0.4,
   color: "#000000"
 };
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js??ref--14-0!./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/ts-loader??ref--14-3!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader-v16/dist??ref--0-1!./src/components/CircleProgress.vue?vue&type=script&lang=ts
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader-v16/dist??ref--0-1!./src/components/CircleProgress.vue?vue&type=script&lang=js
 
 
 
@@ -2738,7 +2700,7 @@ function uuid() {
   return prefix + Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8) + suffix;
 }
 
-/* harmony default export */ var CircleProgressvue_type_script_lang_ts = (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["defineComponent"])({
+/* harmony default export */ var CircleProgressvue_type_script_lang_js = ({
   name: "circle-progress",
   props: {
     size: {
@@ -3015,17 +2977,17 @@ function uuid() {
       feBgShadowAttr: feBgShadowAttr
     };
   }
-}));
-// CONCATENATED MODULE: ./src/components/CircleProgress.vue?vue&type=script&lang=ts
+});
+// CONCATENATED MODULE: ./src/components/CircleProgress.vue?vue&type=script&lang=js
  
 // CONCATENATED MODULE: ./src/components/CircleProgress.vue
 
 
 
-CircleProgressvue_type_script_lang_ts.render = render
+CircleProgressvue_type_script_lang_js.render = render
 
-/* harmony default export */ var CircleProgress = (CircleProgressvue_type_script_lang_ts);
-// CONCATENATED MODULE: ./src/entry.ts
+/* harmony default export */ var CircleProgress = (CircleProgressvue_type_script_lang_js);
+// CONCATENATED MODULE: ./src/entry.js
 
 /* harmony default export */ var entry = (CircleProgress);
 // CONCATENATED MODULE: ./node_modules/@vue/cli-service/lib/commands/build/entry-lib.js
@@ -3099,9 +3061,8 @@ module.exports = {
 var NATIVE_SYMBOL = __webpack_require__("4930");
 
 module.exports = NATIVE_SYMBOL
-  // eslint-disable-next-line no-undef
+  /* global Symbol -- safe */
   && !Symbol.sham
-  // eslint-disable-next-line no-undef
   && typeof Symbol.iterator == 'symbol';
 
 
