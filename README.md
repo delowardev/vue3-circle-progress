@@ -14,6 +14,10 @@ Highly customizable & lightweight circular progressbar component for Vue 3, buil
 * [Callback](#callback)
 * [Default Props](#default-props)
 
+<br/>
+
+#### Live demo: [codesandbox.io/s/determined-dawn-3ybev](https://codesandbox.io/s/determined-dawn-3ybev?file=/src/App.vue)
+
 ## Installation
 
 Install with npm:
