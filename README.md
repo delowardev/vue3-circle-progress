@@ -32,6 +32,7 @@ yarn add vue3-circle-progress
 ```vue
 
 <template>
+  
   // Basic Usage
   <circle-progress :percent="40" />
   
@@ -71,6 +72,7 @@ yarn add vue3-circle-progress
 
 <script>
 
+import "vue3-circle-progress/dist/circle-progress.css";
 import CircleProgress from "vue3-circle-progress";
 export default {
   components: {CircleProgress}
@@ -104,6 +106,7 @@ Available Props, this package supports 30+ props
 | bg-shadow | Shadow Essential Values | [{...}](#propsbgshadow)  | Object | N/A |
 | viewport | Animate when element is in viewport |  `true`  | Boolean | N/A |
 | on-viewport | Callback function to detect viewport |  `undefined`  | Function | N/A |
+| show-percent | Enable disable percent counter |  `false`  | Boolean | N/A |
 
 #### Example:
 

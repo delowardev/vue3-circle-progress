@@ -1,9 +1,10 @@
 <template>
   <circle-progress
+    :percent="percent"
     :viewport="true"
     :is-shadow="true"
     :is-bg-shadow="true"
-    :percent="percent"
+    :show-percent="true"
   />
   <circle-progress :viewport="true" :is-gradient="true" />
   <circle-progress
@@ -23,8 +24,27 @@
 </template>
 
 <script>
+import { onMounted, ref } from "vue";
+
 export default {
-  name: "App"
+  name: "App",
+  setup() {
+    const percent = ref(75);
+
+    onMounted(() => {
+      setInterval(() => {
+        if (percent.value === 25) {
+          percent.value = 75;
+        } else {
+          percent.value = 25;
+        }
+      }, 1000);
+    });
+
+    return {
+      percent
+    };
+  }
 };
 </script>
 

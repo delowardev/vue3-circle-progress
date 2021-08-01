@@ -44,6 +44,7 @@
         </filter>
       </template>
     </svg>
+    <span v-if="showPercent" class="current-counter">{{ currentPercent }}</span>
   </div>
 </template>
 
@@ -141,6 +142,10 @@ export default {
     class: {
       type: String,
       default: ""
+    },
+    showPercent: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {
@@ -148,6 +153,7 @@ export default {
     const uid2 = uuid("shd1_");
     const uid3 = uuid("shd2_");
     const elem = ref(null);
+    const currentPercent = ref(0);
 
     const gradient = { ...GRADIENT, ...props.gradient };
     const shadow = { ...SHADOW, ...props.shadow };
@@ -290,6 +296,26 @@ export default {
     function updatePercent() {
       const circumference = 2 * Math.PI * circleRadiusFg();
       offset.value = circumference - (circumference * props.percent) / 100;
+      const newPercent = Math.round(100 - (100 / circumference) * offset.value);
+      animateValue(newPercent);
+    }
+
+    function animateValue(to) {
+      const step = to - currentPercent.value;
+      const delay = props.transition / Math.abs(step);
+      const counter = setInterval(() => {
+        if (step > 0) {
+          currentPercent.value += 1;
+          if (currentPercent.value >= to) {
+            clearInterval(counter);
+          }
+        } else {
+          currentPercent.value -= 1;
+          if (currentPercent.value <= to) {
+            clearInterval(counter);
+          }
+        }
+      }, delay);
     }
 
     function placeOffset() {
@@ -340,8 +366,21 @@ export default {
       shadowAttr,
       feShadowAttr,
       bgShadowAttr,
-      feBgShadowAttr
+      feBgShadowAttr,
+      currentPercent
     };
   }
 };
 </script>
+
+<style scoped>
+.vue3-circular-progressbar {
+  position: relative;
+}
+.vue3-circular-progressbar .current-counter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>
