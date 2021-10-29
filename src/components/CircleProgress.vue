@@ -302,20 +302,22 @@ export default {
 
     function animateValue(to) {
       const step = to - currentPercent.value;
-      const delay = props.transition / Math.abs(step);
-      const counter = setInterval(() => {
-        if (step > 0) {
-          currentPercent.value += 1;
-          if (currentPercent.value >= to) {
-            clearInterval(counter);
+      if (step) {
+        const delay = props.transition / Math.abs(step);
+        const counter = setInterval(() => {
+          if (step > 0) {
+            currentPercent.value += 1;
+            if (currentPercent.value >= to) {
+              clearInterval(counter);
+            }
+          } else {
+            currentPercent.value -= 1;
+            if (currentPercent.value <= to) {
+              clearInterval(counter);
+            }
           }
-        } else {
-          currentPercent.value -= 1;
-          if (currentPercent.value <= to) {
-            clearInterval(counter);
-          }
-        }
-      }, delay);
+        }, delay);
+      }
     }
 
     function placeOffset() {
