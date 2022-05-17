@@ -8,6 +8,7 @@
     :unit="'%'"
   />
   <circle-progress :viewport="true" :is-gradient="true" />
+  <circle-progress :viewport="true" :show-percent="true" :unit="'Acres'" />
   <circle-progress
     :is-bg-shadow="true"
     :bg-shadow="{
