@@ -5,6 +5,7 @@
     :is-shadow="true"
     :is-bg-shadow="true"
     :show-percent="true"
+    :unit="'%'"
   />
   <circle-progress :viewport="true" :is-gradient="true" />
   <circle-progress
