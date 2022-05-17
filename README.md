@@ -111,6 +111,7 @@ Available Props, this package supports 30+ props
 | viewport | Animate when element is in viewport |  `true`  | Boolean | N/A |
 | on-viewport | Callback function to detect viewport |  `undefined`  | Function | N/A |
 | show-percent | Enable disable percent counter |  `false`  | Boolean | N/A |
+| unit | Unit of percent counter |  `'%'`  | String | N/A |
 
 #### Example:
 
