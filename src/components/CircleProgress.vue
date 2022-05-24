@@ -44,7 +44,9 @@
         </filter>
       </template>
     </svg>
-    <span v-if="showPercent" class="current-counter">{{ currentPercent }}</span>
+    <span v-if="showPercent" class="current-counter"
+      >{{ currentPercent }} {{ unit }}</span
+    >
   </div>
 </template>
 
@@ -146,6 +148,10 @@ export default {
     showPercent: {
       type: Boolean,
       default: false
+    },
+    unit: {
+      type: String,
+      default: ""
     }
   },
   setup(props) {
